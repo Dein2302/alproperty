@@ -208,6 +208,17 @@
             try {
                 const response = await fetch(SHEET_CSV_URL);
                 const csvData = await response.text();
+                
+                // Ambil baris pertama mentah khusus untuk membaca sel H1 (Kolom H baris pertama)
+                const rawLines = csvData.split(/\r?\n/);
+                if (rawLines.length > 0) {
+                    const firstRowCols = rawLines[0].split(',');
+                    // Kolom H adalah indeks ke-7 (A=0, B=1, C=2, D=3, E=4, F=5, G=6, H=7)
+                    if (firstRowCols[7] && firstRowCols[7].trim() !== '') {
+                        document.getElementById('lastUpdatedText').textContent = firstRowCols[7].replace(/["']/g, '').trim();
+                    }
+                }
+
                 const data = parseFullCSV(csvData);
 
                 if (!data || data.length === 0) {
@@ -215,12 +226,6 @@
                     document.getElementById('unitCount').textContent = 'Menampilkan 0 unit';
                     return;
                 }
-
-                // Ambil nilai murni dari sel H1 Google Sheets tanpa fallback ke jam realtime
-                const lastUpdatedHeaderKey = Object.keys(data[0]).find(k => k.toLowerCase().includes('last') || k.toLowerCase().includes('update') || k === 'H1') || Object.keys(data[0])[7];
-                let lastUpdated = data[0][lastUpdatedHeaderKey] || 'Terbaru';
-                
-                document.getElementById('lastUpdatedText').textContent = lastUpdated;
 
                 grid.innerHTML = '';
                 let count = 0;
