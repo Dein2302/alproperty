@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALProperty - Sewa Apartemen Murah & Terjangkau</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        grove: {
+                            bg: '#F9F8F6',
+                            card: '#FFFFFF',
+                            primary: '#5B8266',
+                            primaryHover: '#4A6E54',
+                            accent: '#E2C044',
+                            text: '#2B2D42',
+                            muted: '#6C757D',
+                            border: '#E5E7EB'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-grove-bg text-grove-text font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header / Navbar Minimalis -->
+    <header class="bg-white border-b border-grove-border sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <span class="text-xl font-bold text-grove-primary tracking-tight">ALProperty</span>
+                <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-medium">Sewa Apartemen</span>
+            </div>
+            <a href="https://wa.me/6281285057447?text=Halo%20ALProperty,%20saya%20mau%20tanya%20sewa%20apartemen" 
+               target="_blank" 
+               class="bg-grove-primary hover:bg-grove-primaryHover text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 transition">
+                <span>Hubungi via WA</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Banner Profil Singkat -->
+    <section class="bg-white border-b border-grove-border py-6">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-4">
+                <img src="1721233003777.jpeg" alt="Agen ALProperty" class="w-16 h-16 rounded-full object-cover border-2 border-grove-primary shadow-sm">
+                <div>
+                    <h1 class="text-lg font-bold text-grove-text">ALProperty - Spesialis Sewa Apartemen</h1>
+                    <p class="text-sm text-grove-muted">Pilihan unit apartemen murah, siap huni, dan proses cepat.</p>
+                </div>
+            </div>
+            <div class="text-sm text-grove-muted bg-grove-bg p-3 rounded-lg border border-grove-border">
+                📍 Area Layanan: Pantai Indah Kapuk (PIK), Jakarta & Sekitarnya
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter & Pencarian Unit -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow">
+        <div class="bg-white p-4 rounded-xl border border-grove-border shadow-sm mb-8">
+            <h2 class="text-sm font-semibold text-grove-muted mb-3 uppercase tracking-wider">Cari Unit Apartemen</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-xs font-medium text-grove-muted mb-1">Tipe Unit</label>
+                    <select id="filterType" onchange="filterUnits()" class="w-full bg-grove-bg border border-grove-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-grove-primary">
+                        <option value="all">Semua Tipe</option>
+                        <option value="Studio">Studio</option>
+                        <option value="1BR">1 Bedroom (1BR)</option>
+                        <option value="2BR">2 Bedroom (2BR)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-grove-muted mb-1">Kondisi</label>
+                    <select id="filterCondition" onchange="filterUnits()" class="w-full bg-grove-bg border border-grove-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-grove-primary">
+                        <option value="all">Semua Kondisi</option>
+                        <option value="Furnished">Full Furnished</option>
+                        <option value="Unfurnished">Unfurnished / Kosongan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-grove-muted mb-1">Maksimal Harga / Bulan</label>
+                    <select id="filterPrice" onchange="filterUnits()" class="w-full bg-grove-bg border border-grove-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-grove-primary">
+                        <option value="all">Semua Harga</option>
+                        <option value="2000000">&le; Rp 2.000.000</option>
+                        <option value="3500000">&le; Rp 3.500.000</option>
+                        <option value="5000000">&le; Rp 5.000.000</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daftar Katalog Unit -->
+        <div class="mb-4 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-grove-text">Daftar Unit Tersedia</h3>
+            <span id="unitCount" class="text-xs text-grove-muted">Menampilkan 3 unit</span>
+        </div>
+
+        <div id="unitGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- Unit 1 -->
+            <div class="unit-card bg-white rounded-xl border border-grove-border overflow-hidden shadow-sm flex flex-col" 
+                 data-type="Studio" data-condition="Furnished" data-price="1800000">
+                <div class="relative bg-gray-200 h-48">
+                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80" alt="Studio Room" class="w-full h-full object-cover">
+                    <span class="absolute top-2 left-2 bg-emerald-600 text-white text-xs px-2 py-1 rounded font-medium">Ready</span>
+                </div>
+                <div class="p-4 flex-grow flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-grove-text">Studio Tower Fuji - PIK 2</h4>
+                            <span class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">Studio</span>
+                        </div>
+                        <p class="text-xs text-grove-muted mb-3">Tokyo Riverside PIK 2, Lantai Sedang</p>
+                        <div class="text-xs text-grove-muted space-y-1 mb-4">
+                            <div>• Full Furnished (Kasur, AC, Lemari)</div>
+                            <div>• Daya Listrik: 1300 Watt</div>
+                            <div>• View: City View</div>
+                        </div>
+                    </div>
+                    <div class="border-t border-grove-border pt-3">
+                        <div class="text-xs text-grove-muted">Harga Sewa:</div>
+                        <div class="text-lg font-bold text-grove-primary mb-3">Rp 1.800.000 <span class="text-xs font-normal text-grove-muted">/ bulan</span></div>
+                        <a href="https://wa.me/6281285057447?text=Halo%20ALProperty,%20saya%20tertarik%20dengan%20unit%20Studio%20Tower%20Fuji%20(Rp%201.8M/bln)" 
+                           target="_blank" 
+                           class="block w-full text-center bg-grove-primary hover:bg-grove-primaryHover text-white py-2 rounded-lg text-xs font-semibold transition">
+                            Tanya Unit via WA
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unit 2 -->
+            <div class="unit-card bg-white rounded-xl border border-grove-border overflow-hidden shadow-sm flex flex-col" 
+                 data-type="2BR" data-condition="Furnished" data-price="3200000">
+                <div class="relative bg-gray-200 h-48">
+                    <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=600&q=80" alt="2BR Room" class="w-full h-full object-cover">
+                    <span class="absolute top-2 left-2 bg-emerald-600 text-white text-xs px-2 py-1 rounded font-medium">Ready</span>
+                </div>
+                <div class="p-4 flex-grow flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-grove-text">2 Bedroom Tower Tokyo - PIK 2</h4>
+                            <span class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">2BR</span>
+                        </div>
+                        <p class="text-xs text-grove-muted mb-3">Tokyo Riverside PIK 2, Corner Unit</p>
+                        <div class="text-xs text-grove-muted space-y-1 mb-4">
+                            <div>• Full Furnished + Kitchen Set</div>
+                            <div>• 2 Kamar Tidur, 1 Kamar Mandi</div>
+                            <div>• Balkon Luas & Ventilasi Bagus</div>
+                        </div>
+                    </div>
+                    <div class="border-t border-grove-border pt-3">
+                        <div class="text-xs text-grove-muted">Harga Sewa:</div>
+                        <div class="text-lg font-bold text-grove-primary mb-3">Rp 3.200.000 <span class="text-xs font-normal text-grove-muted">/ bulan</span></div>
+                        <a href="https://wa.me/6281285057447?text=Halo%20ALProperty,%20saya%20tertarik%20dengan%20unit%202BR%20Tower%20Tokyo%20(Rp%203.2M/bln)" 
+                           target="_blank" 
+                           class="block w-full text-center bg-grove-primary hover:bg-grove-primaryHover text-white py-2 rounded-lg text-xs font-semibold transition">
+                            Tanya Unit via WA
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unit 3 -->
+            <div class="unit-card bg-white rounded-xl border border-grove-border overflow-hidden shadow-sm flex flex-col" 
+                 data-type="1BR" data-condition="Unfurnished" data-price="1500000">
+                <div class="relative bg-gray-200 h-48">
+                    <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=600&q=80" alt="1BR Unfurnished" class="w-full h-full object-cover">
+                    <span class="absolute top-2 left-2 bg-emerald-600 text-white text-xs px-2 py-1 rounded font-medium">Ready</span>
+                </div>
+                <div class="p-4 flex-grow flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-grove-text">1BR Kosongan - PIK Area</h4>
+                            <span class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">1BR</span>
+                        </div>
+                        <p class="text-xs text-grove-muted mb-3">Cocok untuk yang bawa barang sendiri</p>
+                        <div class="text-xs text-grove-muted space-y-1 mb-4">
+                            <div>• Unfurnished (Sudah Pasang AC)</div>
+                            <div>• Kebersihan Terjamin & Siap Pakai</div>
+                            <div>• Deposit Murah</div>
+                        </div>
+                    </div>
+                    <div class="border-t border-grove-border pt-3">
+                        <div class="text-xs text-grove-muted">Harga Sewa:</div>
+                        <div class="text-lg font-bold text-grove-primary mb-3">Rp 1.500.000 <span class="text-xs font-normal text-grove-muted">/ bulan</span></div>
+                        <a href="https://wa.me/6281285057447?text=Halo%20ALProperty,%20saya%20tertarik%20dengan%20unit%201BR%20Kosongan%20(Rp%201.5M/bln)" 
+                           target="_blank" 
+                           class="block w-full text-center bg-grove-primary hover:bg-grove-primaryHover text-white py-2 rounded-lg text-xs font-semibold transition">
+                            Tanya Unit via WA
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer Simple -->
+    <footer class="bg-white border-t border-grove-border py-6 mt-12">
+        <div class="max-w-6xl mx-auto px-4 text-center text-xs text-grove-muted">
+            <p class="font-semibold text-grove-text mb-1">ALProperty © 2026</p>
+            <p>Jasa Titip Sewa & Agen Properti Apartemen. Layanan Responsif & Transparan.</p>
+        </div>
+    </footer>
+
+    <script>
+        function filterUnits() {
+            const type = document.getElementById('filterType').value;
+            const condition = document.getElementById('filterCondition').value;
+            const price = document.getElementById('filterPrice').value;
+
+            const cards = document.querySelectorAll('.unit-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const cardType = card.getAttribute('data-type');
+                const cardCondition = card.getAttribute('data-condition');
+                const cardPrice = parseInt(card.getAttribute('data-price'));
+
+                const matchType = type === 'all' || cardType === type;
+                const matchCondition = condition === 'all' || cardCondition === condition;
+                const matchPrice = price === 'all' || cardPrice <= parseInt(price);
+
+                if (matchType && matchCondition && matchPrice) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            document.getElementById('unitCount').textContent = `Menampilkan ${visibleCount} unit`;
+        }
+    </script>
+</body>
+</html>
