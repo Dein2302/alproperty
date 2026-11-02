@@ -124,7 +124,7 @@
         </div>
     </main>
 
-    <!-- Modal Overlay Galeri Foto Melayang (iOS Safari Friendly) -->
+    <!-- Modal Overlay Galeri Foto Melayang (Universal Lintas Browser) -->
     <div id="imageModal" class="fixed inset-0 bg-black/80 z-50 hidden flex-col items-center justify-center p-4 backdrop-blur-sm">
         <div class="relative max-w-4xl w-full bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
             <div class="p-4 border-b flex justify-between items-center bg-gray-50">
@@ -132,7 +132,7 @@
                 <button onclick="closeModal()" class="text-gray-500 hover:text-gray-800 text-2xl font-bold px-2">&times;</button>
             </div>
             <div class="relative bg-black flex-grow flex items-center justify-center min-h-[300px] sm:min-h-[450px]">
-                <img id="modalMainImage" src="" alt="Foto Unit" referrerpolicy="no-referrer" class="max-h-[60vh] object-contain">
+                <img id="modalMainImage" src="" alt="Foto Unit" class="max-h-[60vh] object-contain">
                 <button onclick="prevImage()" class="absolute left-3 bg-white/80 hover:bg-white text-black p-2 rounded-full shadow-lg text-lg font-bold z-10">&larr;</button>
                 <button onclick="nextImage()" class="absolute right-3 bg-white/80 hover:bg-white text-black p-2 rounded-full shadow-lg text-lg font-bold z-10">&rarr;</button>
                 <span id="modalCounter" class="absolute bottom-3 bg-black/60 text-white text-xs px-3 py-1 rounded-full z-10">1 / 1</span>
@@ -192,16 +192,15 @@
             return result;
         }
 
+        // Ekstraksi ID bersih dari segala jenis format link Google Drive
         function formatDriveImageUrl(url) {
             if (!url) return 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80';
             const cleanUrl = url.trim();
             
-            if (cleanUrl.includes('drive.google.com')) {
-                const match = cleanUrl.match(/\/d\/([^\/]+)/);
-                if (match && match[1]) {
-                    // Gunakan format uc?export=view&id= untuk stabilitas tinggi di Safari iOS
-                    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
-                }
+            // Tangkap ID file dari format /d/FILE_ID atau id=FILE_ID
+            const driveMatch = cleanUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
+            if (driveMatch && driveMatch[1]) {
+                return `https://lh3.googleusercontent.com/d/${driveMatch[1]}`;
             }
             return cleanUrl;
         }
@@ -253,14 +252,13 @@
 
                     const formattedPrice = new Intl.NumberFormat('id-ID').format(price);
 
-                    // Simpan data gambar di window object agar aman dipanggil di iOS
                     window[`unitImages_${unitIdx}`] = imageUrls;
 
                     const cardHTML = `
                         <div class="unit-card bg-white rounded-xl border border-grove-border overflow-hidden shadow-sm flex flex-col transition hover:shadow-md" 
                              data-type="${type}" data-condition="${condition}" data-price="${price}">
                             <div class="relative bg-gray-200 h-48 cursor-pointer group" onclick='openModalByIdx(${unitIdx}, "${encodeURIComponent(name)}")'>
-                                <img src="${coverImage}" alt="${name}" referrerpolicy="no-referrer" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80'">
+                                <img src="${coverImage}" alt="${name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80'">
                                 <span class="absolute top-2 left-2 ${statusBadgeClass} text-white text-xs px-2 py-1 rounded font-medium">${statusText}</span>
                                 <span class="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded backdrop-blur-xs font-semibold">${photoBadgeText}</span>
                             </div>
@@ -315,9 +313,7 @@
 
         function updateModalView() {
             const imgElement = document.getElementById('modalMainImage');
-            // Menambahkan timestamp unik agar Safari iOS tidak mem-cache gambar kosong
-            const targetSrc = currentModalImages[currentModalIndex];
-            imgElement.src = targetSrc;
+            imgElement.src = currentModalImages[currentModalIndex];
             
             document.getElementById('modalCounter').textContent = `${currentModalIndex + 1} / ${currentModalImages.length}`;
 
@@ -325,7 +321,7 @@
             thumbsContainer.innerHTML = '';
             currentModalImages.forEach((img, idx) => {
                 const border = idx === currentModalIndex ? 'border-2 border-grove-primary' : 'opacity-60';
-                thumbsContainer.innerHTML += `<img src="${img}" referrerpolicy="no-referrer" class="w-14 h-14 object-cover rounded cursor-pointer ${border}" onclick="setModalIndex(${idx})">`;
+                thumbsContainer.innerHTML += `<img src="${img}" class="w-14 h-14 object-cover rounded cursor-pointer ${border}" onclick="setModalIndex(${idx})">`;
             });
         }
 
