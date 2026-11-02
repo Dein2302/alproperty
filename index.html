@@ -132,25 +132,48 @@
         </div>
     </footer>
 
-    <!-- Script Integrasi Google Sheets CSV & Autoconvert Google Drive Links -->
+    <!-- Script Integrasi CSV & Autoconvert Google Drive -->
     <script>
         const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR--EbJnL5yHwSfd61ihpbpPv84lYkk2P7uu0s4-khHrJe85sW6Ket-i1YKmIGHZ7D8VQLNz62Lv4Xm/pub?output=csv';
 
-        function parseCSV(text) {
-            const lines = text.trim().split('\n');
-            if (lines.length === 0) return [];
+        // Parser CSV Profesional (Aman dari Koma & Tanda Kutip)
+        function parseCSVLine(text) {
+            const result = [];
+            let cell = '';
+            let inQuotes = false;
             
-            const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+            for (let i = 0; i < text.length; i++) {
+                const c = text[i];
+                if (c === '"') {
+                    if (inQuotes && text[i + 1] === '"') {
+                        cell += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (c === ',' && !inQuotes) {
+                    result.push(cell.trim());
+                    cell = '';
+                } else {
+                    cell += c;
+                }
+            }
+            result.push(cell.trim());
+            return result;
+        }
+
+        function parseCSV(text) {
+            const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+            if (lines.length === 0) return [];
+
+            const headers = parseCSVLine(lines[0]);
             const result = [];
 
             for (let i = 1; i < lines.length; i++) {
-                if (!lines[i]) continue;
-                const currentline = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                const values = parseCSVLine(lines[i]);
                 const obj = {};
                 for (let j = 0; j < headers.length; j++) {
-                    let val = currentline[j] ? currentline[j].trim() : '';
-                    val = val.replace(/^"|"$/g, '').replace(/""/g, '"');
-                    obj[headers[j]] = val;
+                    obj[headers[j]] = values[j] !== undefined ? values[j] : '';
                 }
                 result.push(obj);
             }
@@ -160,7 +183,6 @@
         function formatDriveImageUrl(url) {
             if (!url) return 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80';
             
-            // Konversi otomatis link Google Drive biasa ke link direct image
             if (url.includes('drive.google.com')) {
                 const match = url.match(/\/d\/([^\/]+)/);
                 if (match && match[1]) {
@@ -196,6 +218,8 @@
                     const name = unit['Nama Unit'] || 'Unit Apartemen';
                     const type = unit['Tipe Unit'] || 'Studio';
                     const condition = unit['Kondisi'] || 'Unfurnished';
+                    
+                    // Ekstrak angka murni untuk harga (membersihkan tulisan Rp, titik, atau koma)
                     const rawPrice = (unit['Harga'] || '0').replace(/[^0-9]/g, '');
                     const price = parseInt(rawPrice) || 0;
                     const desc = unit['Deskripsi'] || 'Siap huni & terawat';
