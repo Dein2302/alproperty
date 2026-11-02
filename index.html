@@ -62,7 +62,7 @@
     <!-- Filter & Pencarian Unit -->
     <main class="max-w-6xl mx-auto px-4 py-8 flex-grow">
 
-        <!-- Banner Info Terakhir Listing Diupdate (Kembali ke Kata-Kata Semula) -->
+        <!-- Banner Info Terakhir Listing Diupdate -->
         <div class="bg-emerald-50 border border-emerald-200 text-emerald-900 px-4 py-2.5 rounded-xl mb-6 flex items-center justify-between text-xs sm:text-sm">
             <div class="flex items-center space-x-2">
                 <span class="relative flex h-2.5 w-2.5">
@@ -134,12 +134,12 @@
 
     <!-- Script Integrasi Google Sheets CSV -->
     <script>
-        // ISI DENGAN URL CSV HASIL 'PUBLISH TO WEB' GOOGLE SHEETS KAMU
-        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT.../pub?output=csv';
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR--EbJnL5yHwSfd61ihpbpPv84lYkk2P7uu0s4-khHrJe85sW6Ket-i1YKmIGHZ7D8VQLNz62Lv4Xm/pub?output=csv';
 
         function parseCSV(text) {
             const lines = text.trim().split('\n');
-            if (lines.length < 2) return [];
+            if (lines.length === 0) return [];
+            
             const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
             const result = [];
 
@@ -174,8 +174,10 @@
                 let count = 0;
 
                 data.forEach(unit => {
-                    const status = unit['Status'] || 'Ready';
-                    if (status.toLowerCase() !== 'ready') return;
+                    const statusRaw = (unit['Status'] || 'Ready').trim();
+                    const isRented = statusRaw.toLowerCase() === 'rented' || statusRaw.toLowerCase() === 'tersewa';
+                    const statusText = isRented ? 'Rented' : 'Ready';
+                    const statusBadgeClass = isRented ? 'bg-gray-500' : 'bg-emerald-600';
 
                     count++;
                     const name = unit['Nama Unit'] || 'Unit Apartemen';
@@ -193,7 +195,7 @@
                              data-type="${type}" data-condition="${condition}" data-price="${price}">
                             <div class="relative bg-gray-200 h-48">
                                 <img src="${imageSrc}" alt="${name}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80'">
-                                <span class="absolute top-2 left-2 bg-emerald-600 text-white text-xs px-2 py-1 rounded font-medium">Ready</span>
+                                <span class="absolute top-2 left-2 ${statusBadgeClass} text-white text-xs px-2 py-1 rounded font-medium">${statusText}</span>
                             </div>
                             <div class="p-4 flex-grow flex flex-col justify-between">
                                 <div>
