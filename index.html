@@ -132,7 +132,7 @@
         </div>
     </footer>
 
-    <!-- Script Integrasi Google Sheets CSV -->
+    <!-- Script Integrasi Google Sheets CSV & Autoconvert Google Drive Links -->
     <script>
         const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR--EbJnL5yHwSfd61ihpbpPv84lYkk2P7uu0s4-khHrJe85sW6Ket-i1YKmIGHZ7D8VQLNz62Lv4Xm/pub?output=csv';
 
@@ -155,6 +155,19 @@
                 result.push(obj);
             }
             return result;
+        }
+
+        function formatDriveImageUrl(url) {
+            if (!url) return 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80';
+            
+            // Konversi otomatis link Google Drive biasa ke link direct image
+            if (url.includes('drive.google.com')) {
+                const match = url.match(/\/d\/([^\/]+)/);
+                if (match && match[1]) {
+                    return `https://lh3.googleusercontent.com/d/${match[1]}`;
+                }
+            }
+            return url;
         }
 
         async function fetchSheetUnits() {
@@ -187,7 +200,8 @@
                     const price = parseInt(rawPrice) || 0;
                     const desc = unit['Deskripsi'] || 'Siap huni & terawat';
                     
-                    let imageSrc = unit['URL Foto'] || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80';
+                    const rawImageSrc = unit['URL Foto'] || '';
+                    const imageSrc = formatDriveImageUrl(rawImageSrc);
                     const formattedPrice = new Intl.NumberFormat('id-ID').format(price);
 
                     const cardHTML = `
