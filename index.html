@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ALProperty - Sewa Apartemen Murah & Terjangkau</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -37,7 +38,7 @@
             </div>
             <a href="https://wa.me/6281285057447?text=Halo%20ALProperty,%20saya%20mau%20tanya%20sewa%20apartemen" 
                target="_blank" 
-               class="bg-grove-primary hover:bg-grove-primaryHover text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 transition">
+               class="bg-grove-primary hover:bg-grove-primaryHover text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 transition shadow-sm">
                 <span>Hubungi via WA</span>
             </a>
         </div>
@@ -47,7 +48,10 @@
     <section class="bg-white border-b border-grove-border py-6">
         <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-4">
-                <img src="1721233003777.jpeg" alt="Agen ALProperty" class="w-16 h-16 rounded-full object-cover border-2 border-grove-primary shadow-sm">
+                <img src="1721233003777.jpeg" 
+                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80';" 
+                     alt="Alwi Koswara" 
+                     class="w-16 h-16 rounded-full object-cover border-2 border-grove-primary shadow-sm">
                 <div>
                     <h1 class="text-lg font-bold text-grove-text">Alwi Koswara - LOT Property Agent</h1>
                     <p class="text-sm text-grove-muted">Sewa unit apartemen murah, siap huni, terupdate</p>
@@ -61,6 +65,19 @@
 
     <!-- Filter & Pencarian Unit -->
     <main class="max-w-6xl mx-auto px-4 py-8 flex-grow">
+
+        <!-- Banner Info Terakhir Listing Diupdate -->
+        <div class="bg-emerald-50 border border-emerald-200 text-emerald-900 px-4 py-2.5 rounded-xl mb-6 flex items-center justify-between text-xs sm:text-sm shadow-sm">
+            <div class="flex items-center space-x-2">
+                <span class="relative flex h-2.5 w-2.5">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+                <span class="font-medium">Terakhir Listing Diupdate: <strong class="font-bold">Senin 2 November 2026 | 09:28 WIB</strong></span>
+            </div>
+            <span class="hidden sm:inline-block text-xs bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded font-semibold">Unit Ready</span>
+        </div>
+
         <div class="bg-white p-4 rounded-xl border border-grove-border shadow-sm mb-8">
             <h2 class="text-sm font-semibold text-grove-muted mb-3 uppercase tracking-wider">Cari Unit Apartemen</h2>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -102,11 +119,11 @@
         <div id="unitGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
             <!-- Unit 1 -->
-            <div class="unit-card bg-white rounded-xl border border-grove-border overflow-hidden shadow-sm flex flex-col" 
+            <div class="unit-card bg-white rounded-xl border border-grove-border overflow-hidden shadow-sm flex flex-col hover:shadow-md transition" 
                  data-type="Studio" data-condition="Furnished" data-price="1800000">
                 <div class="relative bg-gray-200 h-48">
                     <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80" alt="Studio Room" class="w-full h-full object-cover">
-                    <span class="absolute top-2 left-2 bg-emerald-600 text-white text-xs px-2 py-1 rounded font-medium">Ready</span>
+                    <span class="absolute top-2 left-2 bg-emerald-600 text-white text-xs px-2 py-1 rounded font-medium shadow">Ready</span>
                 </div>
                 <div class="p-4 flex-grow flex flex-col justify-between">
                     <div>
@@ -134,11 +151,11 @@
             </div>
 
             <!-- Unit 2 -->
-            <div class="unit-card bg-white rounded-xl border border-grove-border overflow-hidden shadow-sm flex flex-col" 
+            <div class="unit-card bg-white rounded-xl border border-grove-border overflow-hidden shadow-sm flex flex-col hover:shadow-md transition" 
                  data-type="2BR" data-condition="Furnished" data-price="3200000">
                 <div class="relative bg-gray-200 h-48">
                     <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=600&q=80" alt="2BR Room" class="w-full h-full object-cover">
-                    <span class="absolute top-2 left-2 bg-emerald-600 text-white text-xs px-2 py-1 rounded font-medium">Ready</span>
+                    <span class="absolute top-2 left-2 bg-emerald-600 text-white text-xs px-2 py-1 rounded font-medium shadow">Ready</span>
                 </div>
                 <div class="p-4 flex-grow flex flex-col justify-between">
                     <div>
@@ -166,11 +183,11 @@
             </div>
 
             <!-- Unit 3 -->
-            <div class="unit-card bg-white rounded-xl border border-grove-border overflow-hidden shadow-sm flex flex-col" 
+            <div class="unit-card bg-white rounded-xl border border-grove-border overflow-hidden shadow-sm flex flex-col hover:shadow-md transition" 
                  data-type="1BR" data-condition="Unfurnished" data-price="1500000">
                 <div class="relative bg-gray-200 h-48">
                     <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=600&q=80" alt="1BR Unfurnished" class="w-full h-full object-cover">
-                    <span class="absolute top-2 left-2 bg-emerald-600 text-white text-xs px-2 py-1 rounded font-medium">Ready</span>
+                    <span class="absolute top-2 left-2 bg-emerald-600 text-white text-xs px-2 py-1 rounded font-medium shadow">Ready</span>
                 </div>
                 <div class="p-4 flex-grow flex flex-col justify-between">
                     <div>
