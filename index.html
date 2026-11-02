@@ -62,16 +62,16 @@
     <!-- Filter & Pencarian Unit -->
     <main class="max-w-6xl mx-auto px-4 py-8 flex-grow">
 
-        <!-- Banner Info Terakhir Listing Diupdate -->
+        <!-- Banner Info Terakhir Listing Diupdate (Kembali ke Kata-Kata Semula) -->
         <div class="bg-emerald-50 border border-emerald-200 text-emerald-900 px-4 py-2.5 rounded-xl mb-6 flex items-center justify-between text-xs sm:text-sm">
             <div class="flex items-center space-x-2">
                 <span class="relative flex h-2.5 w-2.5">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
-                <span class="font-medium">Katalog Live Database Google Sheets</span>
+                <span class="font-medium">Terakhir Listing Diupdate: <strong class="font-bold">Senin 2 November 2026 | 09:28 WIB</strong></span>
             </div>
-            <span class="hidden sm:inline-block text-xs bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded font-semibold">Realtime Auto-Sync</span>
+            <span class="hidden sm:inline-block text-xs bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded font-semibold">Unit Ready</span>
         </div>
 
         <div class="bg-white p-4 rounded-xl border border-grove-border shadow-sm mb-8">
@@ -134,11 +134,12 @@
 
     <!-- Script Integrasi Google Sheets CSV -->
     <script>
-        // Tempelkan URL CSV hasil 'Publish to Web' Google Sheets kamu di variabel ini
-        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR--EbJnL5yHwSfd61ihpbpPv84lYkk2P7uu0s4-khHrJe85sW6Ket-i1YKmIGHZ7D8VQLNz62Lv4Xm/pub?output=csv';
+        // ISI DENGAN URL CSV HASIL 'PUBLISH TO WEB' GOOGLE SHEETS KAMU
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT.../pub?output=csv';
 
         function parseCSV(text) {
             const lines = text.trim().split('\n');
+            if (lines.length < 2) return [];
             const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
             const result = [];
 
