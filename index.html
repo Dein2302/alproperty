@@ -124,6 +124,23 @@
         </div>
     </main>
 
+    <!-- Modal Overlay Galeri Foto Melayang -->
+    <div id="imageModal" class="fixed inset-0 bg-black/80 z-50 hidden flex-col items-center justify-center p-4 backdrop-blur-sm">
+        <div class="relative max-w-4xl w-full bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                <h3 id="modalTitle" class="font-bold text-grove-text text-sm sm:text-base">Galeri Foto Unit</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-800 text-2xl font-bold px-2">&times;</button>
+            </div>
+            <div class="relative bg-black flex-grow flex items-center justify-center min-h-[300px] sm:min-h-[450px]">
+                <img id="modalMainImage" src="" alt="Foto Unit" class="max-h-[60vh] object-contain">
+                <button onclick="prevImage()" class="absolute left-3 bg-white/80 hover:bg-white text-black p-2 rounded-full shadow-lg text-lg font-bold">&larr;</button>
+                <button onclick="nextImage()" class="absolute right-3 bg-white/80 hover:bg-white text-black p-2 rounded-full shadow-lg text-lg font-bold">&rarr;</button>
+                <span id="modalCounter" class="absolute bottom-3 bg-black/60 text-white text-xs px-3 py-1 rounded-full">1 / 1</span>
+            </div>
+            <div id="modalThumbnails" class="p-3 bg-gray-100 flex gap-2 overflow-x-auto border-t"></div>
+        </div>
+    </div>
+
     <!-- Footer Simple -->
     <footer class="bg-white border-t border-grove-border py-6 mt-12">
         <div class="max-w-6xl mx-auto px-4 text-center text-xs text-grove-muted">
@@ -135,6 +152,9 @@
     <!-- Script Integrasi CSV & Autoconvert Google Drive -->
     <script>
         const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR--EbJnL5yHwSfd61ihpbpPv84lYkk2P7uu0s4-khHrJe85sW6Ket-i1YKmIGHZ7D8VQLNz62Lv4Xm/pub?output=csv';
+
+        let currentModalImages = [];
+        let currentModalIndex = 0;
 
         function parseFullCSV(text) {
             const arr = [];
@@ -181,7 +201,7 @@
                     return `https://lh3.googleusercontent.com/d/${match[1]}`;
                 }
             }
-            return url;
+            return url.trim();
         }
 
         async function fetchSheetUnits() {
@@ -197,7 +217,6 @@
                     return;
                 }
 
-                // Ambil Waktu Update dari Kolom H (LastUpdated / sel H1) jika ada, atau fallback ke tanggal saat ini
                 let lastUpdated = data[0]['LastUpdated'] || data[0]['H1'] || '';
                 if (!lastUpdated) {
                     const now = new Date();
@@ -225,16 +244,21 @@
                     const condition = unit['Kondisi'] || 'Unfurnished';
                     const fullDesc = unit['Deskripsi'] || `${type} - ${condition}`;
                     
-                    const rawImageSrc = unit['URL Foto'] || '';
-                    const imageSrc = formatDriveImageUrl(rawImageSrc);
+                    // Ekstrak banyak URL foto jika dipisahkan koma
+                    const rawImageUrls = (unit['URL Foto'] || '').split(',');
+                    const imageUrls = rawImageUrls.map(url => formatDriveImageUrl(url)).filter(url => url !== '');
+                    const coverImage = imageUrls.length > 0 ? imageUrls[0] : 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80';
+                    const photoBadgeText = imageUrls.length > 1 ? `📷 ${imageUrls.length} Foto` : '📷 1 Foto';
+
                     const formattedPrice = new Intl.NumberFormat('id-ID').format(price);
 
                     const cardHTML = `
                         <div class="unit-card bg-white rounded-xl border border-grove-border overflow-hidden shadow-sm flex flex-col transition hover:shadow-md" 
                              data-type="${type}" data-condition="${condition}" data-price="${price}">
-                            <div class="relative bg-gray-200 h-48">
-                                <img src="${imageSrc}" alt="${name}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80'">
+                            <div class="relative bg-gray-200 h-48 cursor-pointer group" onclick='openModal(${JSON.stringify(imageUrls)}, "${encodeURIComponent(name)}")'>
+                                <img src="${coverImage}" alt="${name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80'">
                                 <span class="absolute top-2 left-2 ${statusBadgeClass} text-white text-xs px-2 py-1 rounded font-medium">${statusText}</span>
+                                <span class="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded backdrop-blur-xs font-semibold">${photoBadgeText}</span>
                             </div>
                             <div class="p-4 flex-grow flex flex-col justify-between">
                                 <div>
@@ -247,11 +271,14 @@
                                 <div class="border-t border-grove-border pt-3">
                                     <div class="text-xs text-grove-muted">Harga Sewa:</div>
                                     <div class="text-lg font-bold text-grove-primary mb-3">Rp ${formattedPrice} <span class="text-xs font-normal text-grove-muted">/ bulan</span></div>
-                                    <a href="https://wa.me/6281285057447?text=Halo%20ALProperty,%20saya%20tertarik%20dengan%20unit%20${encodeURIComponent(name)}" 
-                                       target="_blank" 
-                                       class="block w-full text-center bg-grove-primary hover:bg-grove-primaryHover text-white py-2 rounded-lg text-xs font-semibold transition">
-                                        Tanya Unit via WA
-                                    </a>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <button onclick='openModal(${JSON.stringify(imageUrls)}, "${encodeURIComponent(name)}")' class="w-full bg-gray-100 hover:bg-gray-200 text-grove-text py-2 rounded-lg text-xs font-semibold transition">Lihat Foto</button>
+                                        <a href="https://wa.me/6281285057447?text=Halo%20ALProperty,%20saya%20tertarik%20dengan%20unit%20${encodeURIComponent(name)}" 
+                                           target="_blank" 
+                                           class="block w-full text-center bg-grove-primary hover:bg-grove-primaryHover text-white py-2 rounded-lg text-xs font-semibold transition">
+                                            Tanya WA
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -265,6 +292,48 @@
                 console.error(err);
                 grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-8">Gagal memuat data Google Sheets. Pastikan spreadsheet sudah diset 'Publish to Web (CSV)'.</p>`;
             }
+        }
+
+        // Fungsi Pop-up Overlay Galeri Foto
+        function openModal(images, title) {
+            currentModalImages = images && images.length > 0 ? images : ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80'];
+            currentModalIndex = 0;
+            document.getElementById('modalTitle').textContent = decodeURIComponent(title);
+            updateModalView();
+            document.getElementById('imageModal').classList.remove('hidden');
+            document.getElementById('imageModal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+            document.getElementById('imageModal').classList.remove('flex');
+        }
+
+        function updateModalView() {
+            document.getElementById('modalMainImage').src = currentModalImages[currentModalIndex];
+            document.getElementById('modalCounter').textContent = `${currentModalIndex + 1} / ${currentModalImages.length}`;
+
+            const thumbsContainer = document.getElementById('modalThumbnails');
+            thumbsContainer.innerHTML = '';
+            currentModalImages.forEach((img, idx) => {
+                const border = idx === currentModalIndex ? 'border-2 border-grove-primary' : 'opacity-60';
+                thumbsContainer.innerHTML += `<img src="${img}" class="w-14 h-14 object-cover rounded cursor-pointer ${border}" onclick="setModalIndex(${idx})">`;
+            });
+        }
+
+        function setModalIndex(idx) {
+            currentModalIndex = idx;
+            updateModalView();
+        }
+
+        function prevImage() {
+            currentModalIndex = (currentModalIndex - 1 + currentModalImages.length) % currentModalImages.length;
+            updateModalView();
+        }
+
+        function nextImage() {
+            currentModalIndex = (currentModalIndex + 1) % currentModalImages.length;
+            updateModalView();
         }
 
         function filterUnits() {
