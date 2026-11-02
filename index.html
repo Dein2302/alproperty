@@ -59,8 +59,8 @@
         </div>
     </section>
 
-    <!-- Content Container -->
-    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full">
+    <!-- Filter & Pencarian Unit -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow">
 
         <!-- Banner Info Terakhir Listing Diupdate -->
         <div class="bg-emerald-50 border border-emerald-200 text-emerald-900 px-4 py-2.5 rounded-xl mb-6 flex items-center justify-between text-xs sm:text-sm">
@@ -69,21 +69,59 @@
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
-                <span class="font-medium">Katalog Unit Live Sync Notion Database</span>
+                <span class="font-medium">Katalog Live Database Google Sheets</span>
             </div>
-            <span class="hidden sm:inline-block text-xs bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded font-semibold">Realtime Auto-Update</span>
+            <span class="hidden sm:inline-block text-xs bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded font-semibold">Realtime Auto-Sync</span>
         </div>
 
-        <!-- Notion Embedded Live Database Window -->
-        <div class="bg-white rounded-xl border border-grove-border shadow-sm overflow-hidden p-2 sm:p-4">
-            <iframe 
-                src="https://bird-petalite-e54.notion.site/ebd/40c5fba684c580ad983bc2b34996c157" 
-                class="w-full h-[700px] border-0 rounded-lg"
-                allow="fullscreen"
-                loading="lazy">
-            </iframe>
+        <div class="bg-white p-4 rounded-xl border border-grove-border shadow-sm mb-8">
+            <h2 class="text-sm font-semibold text-grove-muted mb-3 uppercase tracking-wider">Cari Unit Apartemen</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-xs font-medium text-grove-muted mb-1">Tipe Unit</label>
+                    <select id="filterType" onchange="filterUnits()" class="w-full bg-grove-bg border border-grove-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-grove-primary">
+                        <option value="all">Semua Tipe</option>
+                        <option value="Studio">Studio</option>
+                        <option value="1BR">1 Bedroom (1BR)</option>
+                        <option value="2BR">2 Bedroom (2BR)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-grove-muted mb-1">Kondisi</label>
+                    <select id="filterCondition" onchange="filterUnits()" class="w-full bg-grove-bg border border-grove-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-grove-primary">
+                        <option value="all">Semua Kondisi</option>
+                        <option value="Unfurnished">Unfurnished / Kosongan</option>
+                        <option value="Furnish Developer">Furnish Developer</option>
+                        <option value="Semi Furnished">Semi Furnished</option>
+                        <option value="Full Furnished">Full Furnished</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-grove-muted mb-1">Maksimal Harga / Bulan</label>
+                    <select id="filterPrice" onchange="filterUnits()" class="w-full bg-grove-bg border border-grove-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-grove-primary">
+                        <option value="all">Semua Harga</option>
+                        <option value="2000000">&le; Rp 2.000.000</option>
+                        <option value="3500000">&le; Rp 3.500.000</option>
+                        <option value="5000000">&le; Rp 5.000.000</option>
+                        <option value="30000000">&le; Rp 30.000.000</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
+        <!-- Daftar Katalog Unit -->
+        <div class="mb-4 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-grove-text">Daftar Unit Tersedia</h3>
+            <span id="unitCount" class="text-xs text-grove-muted">Memuat data Google Sheets...</span>
+        </div>
+
+        <!-- Container Grid Unit -->
+        <div id="unitGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div id="loadingState" class="col-span-full text-center py-12 text-grove-muted">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-grove-primary border-t-transparent mb-2"></div>
+                <p class="text-sm">Menghubungkan ke Google Sheets...</p>
+            </div>
+        </div>
     </main>
 
     <!-- Footer Simple -->
@@ -94,5 +132,132 @@
         </div>
     </footer>
 
+    <!-- Script Integrasi Google Sheets CSV -->
+    <script>
+        // Tempelkan URL CSV hasil 'Publish to Web' Google Sheets kamu di variabel ini
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR--EbJnL5yHwSfd61ihpbpPv84lYkk2P7uu0s4-khHrJe85sW6Ket-i1YKmIGHZ7D8VQLNz62Lv4Xm/pub?output=csv';
+
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+            const result = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i]) continue;
+                const currentline = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                const obj = {};
+                for (let j = 0; j < headers.length; j++) {
+                    let val = currentline[j] ? currentline[j].trim() : '';
+                    val = val.replace(/^"|"$/g, '').replace(/""/g, '"');
+                    obj[headers[j]] = val;
+                }
+                result.push(obj);
+            }
+            return result;
+        }
+
+        async function fetchSheetUnits() {
+            const grid = document.getElementById('unitGrid');
+            try {
+                const response = await fetch(SHEET_CSV_URL);
+                const csvData = await response.text();
+                const data = parseCSV(csvData);
+
+                if (!data || data.length === 0) {
+                    grid.innerHTML = `<p class="col-span-full text-center text-grove-muted py-8">Belum ada unit yang terdaftar di Google Sheets.</p>`;
+                    document.getElementById('unitCount').textContent = 'Menampilkan 0 unit';
+                    return;
+                }
+
+                grid.innerHTML = '';
+                let count = 0;
+
+                data.forEach(unit => {
+                    const status = unit['Status'] || 'Ready';
+                    if (status.toLowerCase() !== 'ready') return;
+
+                    count++;
+                    const name = unit['Nama Unit'] || 'Unit Apartemen';
+                    const type = unit['Tipe Unit'] || 'Studio';
+                    const condition = unit['Kondisi'] || 'Unfurnished';
+                    const rawPrice = (unit['Harga'] || '0').replace(/[^0-9]/g, '');
+                    const price = parseInt(rawPrice) || 0;
+                    const desc = unit['Deskripsi'] || 'Siap huni & terawat';
+                    
+                    let imageSrc = unit['URL Foto'] || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80';
+                    const formattedPrice = new Intl.NumberFormat('id-ID').format(price);
+
+                    const cardHTML = `
+                        <div class="unit-card bg-white rounded-xl border border-grove-border overflow-hidden shadow-sm flex flex-col transition hover:shadow-md" 
+                             data-type="${type}" data-condition="${condition}" data-price="${price}">
+                            <div class="relative bg-gray-200 h-48">
+                                <img src="${imageSrc}" alt="${name}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80'">
+                                <span class="absolute top-2 left-2 bg-emerald-600 text-white text-xs px-2 py-1 rounded font-medium">Ready</span>
+                            </div>
+                            <div class="p-4 flex-grow flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h4 class="font-bold text-grove-text">${name}</h4>
+                                        <span class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">${type}</span>
+                                    </div>
+                                    <p class="text-xs text-grove-muted mb-3">${desc}</p>
+                                    <div class="text-xs text-grove-muted space-y-1 mb-4">
+                                        <div>• Kondisi: <strong>${condition}</strong></div>
+                                        <div>• Unit Terawat & Siap Huni</div>
+                                    </div>
+                                </div>
+                                <div class="border-t border-grove-border pt-3">
+                                    <div class="text-xs text-grove-muted">Harga Sewa:</div>
+                                    <div class="text-lg font-bold text-grove-primary mb-3">Rp ${formattedPrice} <span class="text-xs font-normal text-grove-muted">/ bulan</span></div>
+                                    <a href="https://wa.me/6281285057447?text=Halo%20ALProperty,%20saya%20tertarik%20dengan%20unit%20${encodeURIComponent(name)}" 
+                                       target="_blank" 
+                                       class="block w-full text-center bg-grove-primary hover:bg-grove-primaryHover text-white py-2 rounded-lg text-xs font-semibold transition">
+                                        Tanya Unit via WA
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    grid.insertAdjacentHTML('beforeend', cardHTML);
+                });
+
+                document.getElementById('unitCount').textContent = `Menampilkan ${count} unit`;
+
+            } catch (err) {
+                console.error(err);
+                grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-8">Gagal memuat data Google Sheets. Pastikan spreadsheet sudah diset 'Publish to Web (CSV)'.</p>`;
+            }
+        }
+
+        function filterUnits() {
+            const type = document.getElementById('filterType').value;
+            const condition = document.getElementById('filterCondition').value;
+            const price = document.getElementById('filterPrice').value;
+
+            const cards = document.querySelectorAll('.unit-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const cardType = card.getAttribute('data-type');
+                const cardCondition = card.getAttribute('data-condition');
+                const cardPrice = parseInt(card.getAttribute('data-price')) || 0;
+
+                const matchType = type === 'all' || cardType === type;
+                const matchCondition = condition === 'all' || cardCondition === condition;
+                const matchPrice = price === 'all' || cardPrice <= parseInt(price);
+
+                if (matchType && matchCondition && matchPrice) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            document.getElementById('unitCount').textContent = `Menampilkan ${visibleCount} unit`;
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchSheetUnits);
+    </script>
 </body>
 </html>
