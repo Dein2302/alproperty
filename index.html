@@ -136,7 +136,7 @@
     <script>
         const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR--EbJnL5yHwSfd61ihpbpPv84lYkk2P7uu0s4-khHrJe85sW6Ket-i1YKmIGHZ7D8VQLNz62Lv4Xm/pub?output=csv';
 
-        // Parser CSV Profesional (Aman dari Koma & Tanda Kutip)
+        // Parser CSV yang menangani koma & kutip
         function parseCSVLine(text) {
             const result = [];
             let cell = '';
@@ -209,19 +209,22 @@
                 let count = 0;
 
                 data.forEach(unit => {
+                    const name = (unit['Nama Unit'] || '').trim();
+                    const rawPrice = (unit['Harga'] || '0').replace(/[^0-9]/g, '');
+                    const price = parseInt(rawPrice) || 0;
+
+                    // PEMBERSIH DATA HANTU:
+                    // Jika Nama Unit kosong ATAU unit tidak punya data harga/foto/tipe valid, lewati!
+                    if (!name || (price === 0 && !unit['URL Foto'] && !unit['Tipe Unit'])) return;
+
                     const statusRaw = (unit['Status'] || 'Ready').trim();
                     const isRented = statusRaw.toLowerCase() === 'rented' || statusRaw.toLowerCase() === 'tersewa';
                     const statusText = isRented ? 'Rented' : 'Ready';
                     const statusBadgeClass = isRented ? 'bg-gray-500' : 'bg-emerald-600';
 
                     count++;
-                    const name = unit['Nama Unit'] || 'Unit Apartemen';
                     const type = unit['Tipe Unit'] || 'Studio';
                     const condition = unit['Kondisi'] || 'Unfurnished';
-                    
-                    // Ekstrak angka murni untuk harga (membersihkan tulisan Rp, titik, atau koma)
-                    const rawPrice = (unit['Harga'] || '0').replace(/[^0-9]/g, '');
-                    const price = parseInt(rawPrice) || 0;
                     const desc = unit['Deskripsi'] || 'Siap huni & terawat';
                     
                     const rawImageSrc = unit['URL Foto'] || '';
