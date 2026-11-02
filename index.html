@@ -54,7 +54,7 @@
                 </div>
             </div>
             <div class="text-sm text-grove-muted bg-grove-bg p-3 rounded-lg border border-grove-border">
-                📍 Pantai Indah Kapuk (PIK) : Tokyo Riverside, Osaka Riverview, Gold Coast
+                📍 Pantai Indah Kapuk (PIK) : Tokyo Riverside, Osaka Riverview & Gold Coast
             </div>
         </div>
     </section>
@@ -216,11 +216,10 @@
                     return;
                 }
 
-                let lastUpdated = data[0]['LastUpdated'] || data[0]['H1'] || '';
-                if (!lastUpdated) {
-                    const now = new Date();
-                    lastUpdated = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) + ' | ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
-                }
+                // Ambil nilai murni dari sel H1 Google Sheets tanpa fallback ke jam realtime
+                const lastUpdatedHeaderKey = Object.keys(data[0]).find(k => k.toLowerCase().includes('last') || k.toLowerCase().includes('update') || k === 'H1') || Object.keys(data[0])[7];
+                let lastUpdated = data[0][lastUpdatedHeaderKey] || 'Terbaru';
+                
                 document.getElementById('lastUpdatedText').textContent = lastUpdated;
 
                 grid.innerHTML = '';
