@@ -54,7 +54,7 @@
                 </div>
             </div>
             <div class="text-sm text-grove-muted bg-grove-bg p-3 rounded-lg border border-grove-border">
-                📍 Pantai Indah Kapuk (PIK) : Tokyo Riverside, Osaka Riverview, Gold Coast
+                📍 Pantai Indah Kapuk (PIK) : Tokyo Riverside, Osaka Riverview & Gold Coast
             </div>
         </div>
     </section>
@@ -209,11 +209,9 @@
                 const response = await fetch(SHEET_CSV_URL);
                 const csvData = await response.text();
                 
-                // Ambil baris pertama mentah khusus untuk membaca sel H1 (Kolom H baris pertama)
                 const rawLines = csvData.split(/\r?\n/);
                 if (rawLines.length > 0) {
                     const firstRowCols = rawLines[0].split(',');
-                    // Kolom H adalah indeks ke-7 (A=0, B=1, C=2, D=3, E=4, F=5, G=6, H=7)
                     if (firstRowCols[7] && firstRowCols[7].trim() !== '') {
                         document.getElementById('lastUpdatedText').textContent = firstRowCols[7].replace(/["']/g, '').trim();
                     }
@@ -240,7 +238,11 @@
                     const statusRaw = (unit['Status'] || 'Ready').trim();
                     const isRented = statusRaw.toLowerCase() === 'rented' || statusRaw.toLowerCase() === 'tersewa';
                     const statusText = isRented ? 'Rented' : 'Ready';
-                    const statusBadgeClass = isRented ? 'bg-gray-500' : 'bg-emerald-600';
+                    const statusBadgeClass = isRented ? 'bg-gray-600' : 'bg-emerald-600';
+                    
+                    // Style khusus untuk unit yang sudah Rented (agak meredup/menggelap)
+                    const cardOpacityClass = isRented ? 'opacity-85 bg-gray-50/80' : 'bg-white';
+                    const imageEffectClass = isRented ? 'grayscale-[30%] brightness-90' : '';
 
                     count++;
                     const type = unit['Tipe Unit'] || 'Studio';
@@ -257,11 +259,12 @@
                     window[`unitImages_${unitIdx}`] = imageUrls;
 
                     const cardHTML = `
-                        <div class="unit-card bg-white rounded-xl border border-grove-border overflow-hidden shadow-sm flex flex-col transition hover:shadow-md" 
+                        <div class="unit-card ${cardOpacityClass} rounded-xl border border-grove-border overflow-hidden shadow-sm flex flex-col transition hover:shadow-md" 
                              data-type="${type}" data-condition="${condition}" data-price="${price}">
                             <div class="relative bg-gray-200 h-48 cursor-pointer group" onclick='openModalByIdx(${unitIdx}, "${encodeURIComponent(name)}")'>
-                                <img src="${coverImage}" alt="${name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80'">
-                                <span class="absolute top-2 left-2 ${statusBadgeClass} text-white text-xs px-2 py-1 rounded font-medium">${statusText}</span>
+                                <img src="${coverImage}" alt="${name}" class="w-full h-full object-cover ${imageEffectClass} group-hover:scale-105 transition duration-300" onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80'">
+                                <div class="absolute inset-0 ${isRented ? 'bg-black/20' : ''} pointer-events-none"></div>
+                                <span class="absolute top-2 left-2 ${statusBadgeClass} text-white text-xs px-2.5 py-1 rounded font-semibold shadow">${statusText}</span>
                                 <span class="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded backdrop-blur-xs font-semibold">${photoBadgeText}</span>
                             </div>
                             <div class="p-4 flex-grow flex flex-col justify-between">
