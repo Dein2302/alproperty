@@ -69,7 +69,7 @@
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
-                <span class="font-medium">Terakhir Listing Diupdate: <strong class="font-bold">Senin 2 November 2026 | 09:28 WIB</strong></span>
+                <span class="font-medium">Terakhir Listing Diupdate: <strong id="lastUpdatedText" class="font-bold">Memuat...</strong></span>
             </div>
             <span class="hidden sm:inline-block text-xs bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded font-semibold">Unit Ready</span>
         </div>
@@ -136,7 +136,6 @@
     <script>
         const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR--EbJnL5yHwSfd61ihpbpPv84lYkk2P7uu0s4-khHrJe85sW6Ket-i1YKmIGHZ7D8VQLNz62Lv4Xm/pub?output=csv';
 
-        // Parser CSV canggih yang mampu membaca teks bersambung banyak baris di dalam tanda kutip
         function parseFullCSV(text) {
             const arr = [];
             let quote = false;
@@ -198,6 +197,14 @@
                     return;
                 }
 
+                // Ambil Waktu Update dari Kolom H (LastUpdated / sel H1) jika ada, atau fallback ke tanggal saat ini
+                let lastUpdated = data[0]['LastUpdated'] || data[0]['H1'] || '';
+                if (!lastUpdated) {
+                    const now = new Date();
+                    lastUpdated = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) + ' | ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+                }
+                document.getElementById('lastUpdatedText').textContent = lastUpdated;
+
                 grid.innerHTML = '';
                 let count = 0;
 
@@ -206,7 +213,6 @@
                     const rawPrice = (unit['Harga'] || '0').replace(/[^0-9]/g, '');
                     const price = parseInt(rawPrice) || 0;
 
-                    // Abaikan baris kosong
                     if (!name) return;
 
                     const statusRaw = (unit['Status'] || 'Ready').trim();
@@ -217,8 +223,6 @@
                     count++;
                     const type = unit['Tipe Unit'] || 'Studio';
                     const condition = unit['Kondisi'] || 'Unfurnished';
-                    
-                    // Ambil teks deskripsi penuh (apabila kosong, tampilkan default)
                     const fullDesc = unit['Deskripsi'] || `${type} - ${condition}`;
                     
                     const rawImageSrc = unit['URL Foto'] || '';
@@ -238,7 +242,6 @@
                                         <h4 class="font-bold text-grove-text">${name}</h4>
                                         <span class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">${type}</span>
                                     </div>
-                                    <!-- Menampilkan full deskripsi copas WA dengan baris baru -->
                                     <div class="text-xs text-grove-muted mb-4 whitespace-pre-line bg-gray-50 p-2.5 rounded-lg border border-gray-100 font-mono leading-relaxed">${fullDesc}</div>
                                 </div>
                                 <div class="border-t border-grove-border pt-3">
