@@ -1,0 +1,8 @@
+**/.env
+**/.env.*
+!.env.example
+**/node_modules/
+**/auth_info_baileys/
+**/credentials.json
+**/meta-tracker-*.json
+.DS_Store**/gemini_usage.json
