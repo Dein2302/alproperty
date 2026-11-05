@@ -35,7 +35,7 @@ const GEMINI_DAILY_BUDGET = 15;
 // Jeda minimal antar request Gemini (limit per menit)
 const MIN_INTERVAL_MS = 13000;
 
-const MAX_QUEUE = 100;
+const MAX_QUEUE = 1000;
 const USAGE_FILE = './gemini_usage.json';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -49,43 +49,101 @@ const KNOWN_PROPERTIES = [
   ['Gold Coast', /\bgold\s*coast\b/i],
   ['Marina Bay', /\bmarina\s*bay\b/i],
   ['Golf Island', /\bgolf\s*island\b/i],
+  ['Green Bay', /\bgreen\s*bay\b/i],
+  ['Pasadena Spring', /\bpasadena\b/i],
+  ['Stanford', /\bstanford\b/i],
   ['Tokyo', /\btokyo\b/i],
   ['Osaka', /\bosaka\b/i],
   ['Beppu', /\bbeppu\b/i],
   ['Milenial', /\bmilenial\b/i],
-  ['Mile', /\bmile\b/i],
+  ['Mile', /\bmill?e\b/i],
+  ['Harvard', /\bharvard\b/i],
+  ['Bizpark', /\bbiz\s*park\b/i],
   ['PIK 1', /\bpik\s*1\b/i],
   ['PIK', /\bpik\b/i]
 ];
+
+// Kata yang BUKAN nama proyek (dipakai saat menebak nama dari baris ke-2 pesan)
+const NOT_NAME_WORDS = new Set((
+  'studio std dev developer br bedroom bed furnish furnished ff kosong kosongan tb depo deposit ' +
+  'harga budget japri ready masuk view lantai lt lb uk ukuran unit ac wni wna juta jt dp fee survey ' +
+  'nego tower zone hook hoek gandeng foto murah urgent cari mau yang ada kalo siap bayar tersewa ' +
+  'sewa disewakan jual dijual bulan bln tahun thn kpr shm ppjb wts wtl wtr wtb spec area luasan arah ' +
+  'lengkap full semi bagus mewah interior brand new listrik kasur kamar tidur mandi sqm dicari butuh ' +
+  'info tolong bisa mohon corner tinggi rendah low high middle mid double sudah lagi'
+).split(' '));
+
+const CATEGORY_MAP = {
+  WTR: 'WTR',
+  WTL: 'WTL',
+  WTS: 'WTS',
+  WTB: 'WTB',
+  SEWA: 'SEWA',
+  DISEWAKAN: 'WTL', // disewakan = want to lease
+  JUAL: 'WTS',      // jual / dijual = want to sell
+  DIJUAL: 'WTS'
+};
 
 function detectCategory(text) {
   const match = /^\W*(wtr|wtl|wts|wtb|sewa|disewakan|jual|dijual)\b/i.exec(text);
   if (!match) return null;
 
-  const word = match[1].toUpperCase();
-  if (word === 'DISEWAKAN') return 'SEWA';
-  if (word === 'DIJUAL') return 'JUAL';
-  return word;
+  return CATEGORY_MAP[match[1].toUpperCase()] || match[1].toUpperCase();
 }
 
-function detectProperty(text) {
+function titleCase(str) {
+  return str
+    .toLowerCase()
+    .split(' ')
+    .filter(Boolean)
+    .map((w) => w[0].toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
+// Tebak nama proyek dari baris ke-2 pesan (hanya untuk listing WTS/WTL/JUAL/SEWA)
+function guessProperty(text, category) {
+  if (!['WTS', 'WTL', 'SEWA'].includes(category)) return '-';
+
+  const lines = text
+    .split('\n')
+    .map((l) => l.replace(/[^\p{L}\p{N}\s&'.,()\/-]/gu, ' ').replace(/\s+/g, ' ').trim())
+    .filter(Boolean);
+
+  if (lines.length < 2) return '-';
+
+  let candidate = lines[1].replace(/^(apartemen|apartement|apart|apt)\s+/i, '').trim();
+
+  if (candidate.length < 3 || candidate.length > 40) return '-';
+  if (/\d/.test(candidate)) return '-';
+
+  const words = candidate.toLowerCase().split(' ');
+  if (words.length > 5) return '-';
+  if (words.some((w) => NOT_NAME_WORDS.has(w.replace(/[.,()]/g, '')))) return '-';
+
+  return titleCase(candidate);
+}
+
+function detectProperty(text, category) {
   for (const [name, regex] of KNOWN_PROPERTIES) {
     if (regex.test(text)) {
       // Rumah/Ruko/Rukan + lokasi, kalau ada
-      const kind = /\b(rumah|ruko|rukan)\b/i.exec(text);
+      const kind = /\b(rumah|ruko|rukan|gudang|tanah)\b/i.exec(text);
       return kind
         ? `${kind[1][0].toUpperCase()}${kind[1].slice(1).toLowerCase()} ${name}`
         : name;
     }
   }
-  return '-';
+  return guessProperty(text, category);
 }
 
 function detectUnitType(text) {
   if (/\bstudio\b/i.test(text)) return 'Studio';
 
-  const br = /\b([1-4])\s*-?\s*br/i.exec(text);
+  const br = /\b([1-4])\s*-?\s*(?:br(?![a-z])|bed\s*room|bedroom|bed(?![a-z]))/i.exec(text);
   if (br) return `${br[1]}BR`;
+
+  const kt = /\b([1-4])\s*(?:kamar\s*tidur|kt)\b/i.exec(text);
+  if (kt) return `${kt[1]}BR`;
 
   return '-';
 }
@@ -94,17 +152,77 @@ function detectCondition(text) {
   if (/semi\s*furnish/i.test(text)) return 'Semi Furnished';
   if (/full\s*furnish|\bff\b/i.test(text)) return 'Full Furnished';
   if (/furnish/i.test(text)) return 'Furnished';
-  if (/kosongan/i.test(text)) return 'Kosongan';
+  if (/\bkosong(an)?\b/i.test(text)) return 'Kosongan';
+  if (/\b(?:std|stnd|standar|standard)\.?\s*dev/i.test(text)) return 'Std Developer';
   if (/\bbare\b/i.test(text)) return 'Bare';
   return '-';
 }
 
+function cleanValue(v) {
+  return v.replace(/[*~_]+/g, '').replace(/\s+/g, ' ').trim();
+}
+
+// TB = isi di belakang kata "TB" (sampai akhir baris, atau sampai kata Depo/Deposit).
+// Beberapa baris TB digabung dengan " | ".
+function detectTB(text) {
+  const re = /(?:^|[\s*(~])(?:tb|t\.b)\b[ \t:.=\-]*([^\n]*?)(?=[ \t]*\b(?:depo|deposit)(?![a-z])|[ \t]*$)/gim;
+  const found = [];
+
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    const v = cleanValue(m[1] || '');
+    if (v) found.push(v);
+  }
+
+  return found.length ? found.join(' | ') : '-';
+}
+
+// Deposit = isi di belakang kata "Depo" / "Deposit" (sampai akhir baris)
+function detectDeposit(text) {
+  const re = /\b(?:depo|deposit)(?![a-z])[ \t:.=\-]*([^\n]*)/gi;
+  const found = [];
+
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    const v = cleanValue(m[1] || '');
+    if (v) found.push(v);
+  }
+
+  return found.length ? found.join(' | ') : '-';
+}
+
+// Satu pesan bisa berisi beberapa listing (tiap listing diawali WTS/WTL/WTR/WTB di awal baris).
+// Fungsi ini memecahnya jadi beberapa blok, supaya tiap listing jadi satu baris di Sheets.
+function splitListings(text) {
+  const blocks = [];
+  let current = [];
+
+  for (const line of text.split('\n')) {
+    const startsListing = /^\W*(wtr|wtl|wts|wtb)\b/i.test(line);
+
+    if (startsListing && current.some((l) => l.trim())) {
+      blocks.push(current.join('\n').trim());
+      current = [line];
+    } else {
+      current.push(line);
+    }
+  }
+
+  if (current.some((l) => l.trim())) blocks.push(current.join('\n').trim());
+
+  return blocks.length ? blocks : [text];
+}
+
 function parseLocally(text) {
+  const kategori = detectCategory(text);
+
   return {
-    kategori: detectCategory(text) || 'MANUAL',
-    nama_properti: detectProperty(text),
+    kategori: kategori || 'MANUAL',
+    nama_properti: detectProperty(text, kategori),
     tipe_unit: detectUnitType(text),
     kondisi: detectCondition(text),
+    tb: detectTB(text),
+    deposit: detectDeposit(text),
     detail: text
   };
 }
@@ -273,6 +391,8 @@ async function parseListing(rawText) {
       nama_properti: val(g.nama_properti) || '-',
       tipe_unit: local.tipe_unit !== '-' ? local.tipe_unit : (val(g.tipe_unit) || '-'),
       kondisi: local.kondisi !== '-' ? local.kondisi : (val(g.kondisi) || '-'),
+      tb: local.tb,
+      deposit: local.deposit,
       detail: rawText
     };
 
@@ -351,15 +471,19 @@ async function appendToSheet(data) {
       throw new Error('Worksheet tidak ditemukan.');
     }
 
-    await sheet.addRow({
-      'Tanggal': new Date().toISOString().split('T')[0],
+    const rowData = {
+      'Tanggal': data.tanggal,
       'Pengirim / Agent': data.pengirim,
       'Kategori (WTS/WTL)': data.kategori,
       'Nama Properti': data.nama_properti,
       'Tipe Unit': data.tipe_unit,
       'Kondisi Unit': data.kondisi,
+      'TB': data.tb,
+      'Deposit': data.deposit,
       'Detail Listing': data.detail
-    });
+    };
+
+    await sheet.addRow(rowData);
 
     console.log('📊 [Google Sheets] Listing berhasil disimpan!');
 
@@ -372,7 +496,20 @@ async function appendToSheet(data) {
 // 6. WHATSAPP CONNECTION
 // ================================================
 
-const processedIds = new Set();
+const PROCESSED_FILE = './processed_ids.json';
+const MAX_AGE_HOURS = 48; // abaikan pesan yang lebih tua dari ini
+
+let processedIds = new Set();
+
+try {
+  processedIds = new Set(JSON.parse(fs.readFileSync(PROCESSED_FILE, 'utf8')));
+} catch (_) { /* file belum ada */ }
+
+function saveProcessed() {
+  try {
+    fs.writeFileSync(PROCESSED_FILE, JSON.stringify([...processedIds]));
+  } catch (_) { /* abaikan */ }
+}
 
 function alreadyProcessed(id) {
   if (!id) return false;
@@ -380,11 +517,24 @@ function alreadyProcessed(id) {
 
   processedIds.add(id);
 
-  if (processedIds.size > 1000) {
+  if (processedIds.size > 2000) {
     processedIds.delete(processedIds.values().next().value);
   }
 
+  saveProcessed();
   return false;
+}
+
+// Ambil waktu asli pesan (detik) dari field messageTimestamp
+function getMessageSeconds(msg) {
+  const raw = msg.messageTimestamp;
+  if (raw === undefined || raw === null) return Math.floor(Date.now() / 1000);
+
+  if (typeof raw === 'object') {
+    return raw.toNumber ? raw.toNumber() : Number(raw.low);
+  }
+
+  return Number(raw);
 }
 
 // Hanya pesan yang DIAWALI kata kunci ini yang diproses
@@ -414,7 +564,7 @@ async function connectToWhatsApp() {
       const statusCode = lastDisconnect?.error?.output?.statusCode;
       const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
 
-      console.log('🔄 Koneksi terputus. Reconnect:', shouldReconnect);
+      console.log('🔄 Koneksi terputus. Kode:', statusCode, '| Reconnect:', shouldReconnect);
 
       if (shouldReconnect) {
         setTimeout(connectToWhatsApp, 3000);
@@ -433,7 +583,8 @@ async function connectToWhatsApp() {
   // ==============================================
 
   sock.ev.on('messages.upsert', async ({ messages, type }) => {
-    if (type !== 'notify') return;
+    // 'notify' = pesan baru, 'append' = pesan tertunda saat bot offline
+    if (type !== 'notify' && type !== 'append') return;
 
     for (const msg of messages) {
       try {
@@ -442,7 +593,17 @@ async function connectToWhatsApp() {
         const from = msg.key.remoteJid;
 
         if (!from?.endsWith('@g.us')) continue;
+
+        const seconds = getMessageSeconds(msg);
+        const ageHours = (Date.now() / 1000 - seconds) / 3600;
+
+        if (ageHours > MAX_AGE_HOURS) continue;
+
         if (alreadyProcessed(msg.key.id)) continue;
+
+        // Format: 2026-11-03 14:35:22 (waktu asli pesan, zona Jakarta)
+        const tanggal = new Date(seconds * 1000)
+          .toLocaleString('sv-SE', { timeZone: 'Asia/Jakarta' });
 
         const message = msg.message;
 
@@ -465,20 +626,31 @@ async function connectToWhatsApp() {
         console.log('Pengirim:', sender);
         console.log('Pesan:', text);
 
-        enqueue(async () => {
-          const parsed = await parseListing(text);
+        const blocks = splitListings(text);
 
-          console.log('🤖 [HASIL]:', parsed);
+        if (blocks.length > 1) {
+          console.log(`ℹ️ Pesan berisi ${blocks.length} listing, dipecah jadi ${blocks.length} baris.`);
+        }
 
-          await appendToSheet({
-            pengirim: sender,
-            kategori: parsed.kategori,
-            nama_properti: parsed.nama_properti,
-            tipe_unit: parsed.tipe_unit,
-            kondisi: parsed.kondisi,
-            detail: parsed.detail
+        for (const block of blocks) {
+          enqueue(async () => {
+            const parsed = await parseListing(block);
+
+            console.log('🤖 [HASIL]:', parsed);
+
+            await appendToSheet({
+              tanggal,
+              pengirim: sender,
+              kategori: parsed.kategori,
+              nama_properti: parsed.nama_properti,
+              tipe_unit: parsed.tipe_unit,
+              kondisi: parsed.kondisi,
+              tb: parsed.tb,
+              deposit: parsed.deposit,
+              detail: parsed.detail
+            });
           });
-        });
+        }
 
       } catch (err) {
         console.error('❌ Error memproses pesan:', err.message);

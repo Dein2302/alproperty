@@ -1,3 +1,6 @@
 Perintah Magic :
 git add . && git commit -m "update website" && git push
 cd "/Users/alwi/Documents/new job/LOT/WEBSITE"
+pm2 status            # cek bot hidup
+pm2 logs wa-bot       # lihat aktivitas (Ctrl+C untuk keluar)
+pm2 restart wa-bot    # setelah mengubah index.js

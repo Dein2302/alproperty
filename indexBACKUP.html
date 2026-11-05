@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALProperty - Sewa Apartemen Murah & Terjangkau</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        grove: {
+                            bg: '#F9F8F6',
+                            card: '#FFFFFF',
+                            primary: '#5B8266',
+                            primaryHover: '#4A6E54',
+                            accent: '#E2C044',
+                            text: '#2B2D42',
+                            muted: '#6C757D',
+                            border: '#E5E7EB'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-grove-bg text-grove-text font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header / Navbar Minimalis -->
+    <header class="bg-white border-b border-grove-border sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <span class="text-xl font-bold text-grove-primary tracking-tight">ALProperty</span>
+                <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-medium">Sewa Apartemen</span>
+            </div>
+            <a href="https://wa.me/6281285057447?text=Halo%20ALProperty,%20saya%20mau%20tanya%20sewa%20apartemen" 
+               target="_blank" 
+               class="bg-grove-primary hover:bg-grove-primaryHover text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center space-x-2 transition">
+                <span>Hubungi via WA</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Banner Profil Singkat -->
+    <section class="bg-white border-b border-grove-border py-6">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-4">
+                <img src="1721233003777.jpeg" alt="Agen ALProperty" class="w-16 h-16 rounded-full object-cover border-2 border-grove-primary shadow-sm" onerror="this.src='https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80'">
+                <div>
+                    <h1 class="text-lg font-bold text-grove-text">Alwi Koswara - LOT Property Agent</h1>
+                    <p class="text-sm text-grove-muted">Sewa & Beli Apartemen</p>
+                </div>
+            </div>
+            <div class="text-sm text-grove-muted bg-grove-bg p-3 rounded-lg border border-grove-border">
+                📍 Pantai Indah Kapuk (PIK) : Tokyo Riverside, Osaka Riverview, Gold Coast
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter & Pencarian Unit -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow">
+
+        <!-- Banner Info Terakhir Listing Diupdate -->
+        <div class="bg-emerald-50 border border-emerald-200 text-emerald-900 px-4 py-2.5 rounded-xl mb-6 flex items-center justify-between text-xs sm:text-sm">
+            <div class="flex items-center space-x-2">
+                <span class="relative flex h-2.5 w-2.5">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+                <span class="font-medium">Terakhir Listing Diupdate: <strong id="lastUpdatedText" class="font-bold">Memuat...</strong></span>
+            </div>
+            <span class="hidden sm:inline-block text-xs bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded font-semibold">Unit Ready</span>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-grove-border shadow-sm mb-8">
+            <h2 class="text-sm font-semibold text-grove-muted mb-3 uppercase tracking-wider">Cari Unit Apartemen</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-xs font-medium text-grove-muted mb-1">Tipe Unit</label>
+                    <select id="filterType" onchange="filterUnits()" class="w-full bg-grove-bg border border-grove-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-grove-primary">
+                        <option value="all">Semua Tipe</option>
+                        <option value="Studio">Studio</option>
+                        <option value="1BR">1 Bedroom (1BR)</option>
+                        <option value="2BR">2 Bedroom (2BR)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-grove-muted mb-1">Kondisi</label>
+                    <select id="filterCondition" onchange="filterUnits()" class="w-full bg-grove-bg border border-grove-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-grove-primary">
+                        <option value="all">Semua Kondisi</option>
+                        <option value="Unfurnished">Unfurnished / Kosongan</option>
+                        <option value="Furnish Developer">Furnish Developer</option>
+                        <option value="Semi Furnished">Semi Furnished</option>
+                        <option value="Full Furnished">Full Furnished</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-grove-muted mb-1">Maksimal Harga / Tahun</label>
+                    <select id="filterPrice" onchange="filterUnits()" class="w-full bg-grove-bg border border-grove-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-grove-primary">
+                        <option value="all">Semua Harga</option>
+                        <option value="25000000">&le; Rp 25.000.000 / thn</option>
+                        <option value="40000000">&le; Rp 40.000.000 / thn</option>
+                        <option value="70000000">&le; Rp 70.000.000 / thn</option>
+                        <option value="120000000">&le; Rp 120.000.000 / thn</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daftar Katalog Unit -->
+        <div class="mb-4 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-grove-text">Daftar Unit Tersedia</h3>
+            <span id="unitCount" class="text-xs text-grove-muted">Memuat data Google Sheets...</span>
+        </div>
+
+        <!-- Container Grid Unit -->
+        <div id="unitGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div id="loadingState" class="col-span-full text-center py-12 text-grove-muted">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-grove-primary border-t-transparent mb-2"></div>
+                <p class="text-sm">Menghubungkan ke Google Sheets...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Overlay Galeri Foto Melayang -->
+    <div id="imageModal" class="fixed inset-0 bg-black/80 z-50 hidden flex-col items-center justify-center p-4 backdrop-blur-sm">
+        <div class="relative max-w-4xl w-full bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                <h3 id="modalTitle" class="font-bold text-grove-text text-sm sm:text-base">Galeri Foto Unit</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-800 text-2xl font-bold px-2">&times;</button>
+            </div>
+            <div class="relative bg-black flex-grow flex items-center justify-center min-h-[300px] sm:min-h-[450px]">
+                <img id="modalMainImage" src="" alt="Foto Unit" class="max-h-[60vh] object-contain">
+                <button onclick="prevImage()" class="absolute left-3 bg-white/80 hover:bg-white text-black p-2 rounded-full shadow-lg text-lg font-bold z-10">&larr;</button>
+                <button onclick="nextImage()" class="absolute right-3 bg-white/80 hover:bg-white text-black p-2 rounded-full shadow-lg text-lg font-bold z-10">&rarr;</button>
+                <span id="modalCounter" class="absolute bottom-3 bg-black/60 text-white text-xs px-3 py-1 rounded-full z-10">1 / 1</span>
+            </div>
+            <div id="modalThumbnails" class="p-3 bg-gray-100 flex gap-2 overflow-x-auto border-t"></div>
+        </div>
+    </div>
+
+    <!-- Footer Simple -->
+    <footer class="bg-white border-t border-grove-border py-6 mt-12">
+        <div class="max-w-6xl mx-auto px-4 text-center text-xs text-grove-muted">
+            <p class="font-semibold text-grove-text mb-1">ALProperty © 2026</p>
+            <p>Jasa Titip Sewa & Agen Properti Apartemen. Layanan Responsif & Transparan.</p>
+        </div>
+    </footer>
+
+    <!-- Script Integrasi CSV & Autoconvert Google Drive -->
+    <script>
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR--EbJnL5yHwSfd61ihpbpPv84lYkk2P7uu0s4-khHrJe85sW6Ket-i1YKmIGHZ7D8VQLNz62Lv4Xm/pub?output=csv';
+
+        let currentModalImages = [];
+        let currentModalIndex = 0;
+
+        function parseFullCSV(text) {
+            const arr = [];
+            let quote = false;
+            let col = 0;
+            let row = 0;
+
+            for (let c = 0; c < text.length; c++) {
+                let cc = text[c], nc = text[c+1];
+                arr[row] = arr[row] || [];
+                arr[row][col] = arr[row][col] || '';
+
+                if (cc == '"' && quote && nc == '"') { arr[row][col] += cc; c++; continue; }
+                if (cc == '"') { quote = !quote; continue; }
+                if (cc == ',' && !quote) { col++; continue; }
+                if (cc == '\r' && nc == '\n' && !quote) { c++; col = 0; row++; continue; }
+                if (cc == '\n' && !quote) { col = 0; row++; continue; }
+                if (cc == '\r' && !quote) { col = 0; row++; continue; }
+                arr[row][col] += cc;
+            }
+
+            if (arr.length === 0) return [];
+
+            const headers = arr[0].map(h => h.trim());
+            const result = [];
+
+            for (let i = 1; i < arr.length; i++) {
+                if (!arr[i] || arr[i].length === 0 || (arr[i].length === 1 && !arr[i][0].trim())) continue;
+                const obj = {};
+                for (let j = 0; j < headers.length; j++) {
+                    obj[headers[j]] = arr[i][j] !== undefined ? arr[i][j].trim() : '';
+                }
+                result.push(obj);
+            }
+            return result;
+        }
+
+        function formatDriveImageUrl(url) {
+            if (!url) return 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80';
+            const cleanUrl = url.trim();
+            
+            const driveMatch = cleanUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
+            if (driveMatch && driveMatch[1]) {
+                return `https://lh3.googleusercontent.com/d/${driveMatch[1]}`;
+            }
+            return cleanUrl;
+        }
+
+        async function fetchSheetUnits() {
+            const grid = document.getElementById('unitGrid');
+            try {
+                const response = await fetch(SHEET_CSV_URL);
+                const csvData = await response.text();
+                
+                const rawLines = csvData.split(/\r?\n/);
+                if (rawLines.length > 0) {
+                    const firstRowCols = rawLines[0].split(',');
+                    if (firstRowCols[7] && firstRowCols[7].trim() !== '') {
+                        document.getElementById('lastUpdatedText').textContent = firstRowCols[7].replace(/["']/g, '').trim();
+                    }
+                }
+
+                const data = parseFullCSV(csvData);
+
+                if (!data || data.length === 0) {
+                    grid.innerHTML = `<p class="col-span-full text-center text-grove-muted py-8">Belum ada unit yang terdaftar di Google Sheets.</p>`;
+                    document.getElementById('unitCount').textContent = 'Menampilkan 0 unit';
+                    return;
+                }
+
+                grid.innerHTML = '';
+                let count = 0;
+
+                data.forEach((unit, unitIdx) => {
+                    const name = (unit['Nama Unit'] || '').trim();
+                    const rawPrice = (unit['Harga'] || '0').replace(/[^0-9]/g, '');
+                    const price = parseInt(rawPrice) || 0;
+
+                    if (!name) return;
+
+                    const statusRaw = (unit['Status'] || 'Ready').trim();
+                    const isRented = statusRaw.toLowerCase() === 'rented' || statusRaw.toLowerCase() === 'tersewa';
+                    const statusText = isRented ? 'Rented' : 'Ready';
+                    const statusBadgeClass = isRented ? 'bg-gray-700' : 'bg-emerald-600';
+                    
+                    // Efek menggelap yang jauh lebih pekat (grayscale tinggi, brightness rendah, dan lapisan hitam tebal)
+                    const cardOpacityClass = isRented ? 'opacity-75 bg-gray-100' : 'bg-white';
+                    const imageEffectClass = isRented ? 'grayscale-[20%] brightness-[55%]' : '';
+
+                    count++;
+                    const type = unit['Tipe Unit'] || 'Studio';
+                    const condition = unit['Kondisi'] || 'Unfurnished';
+                    const fullDesc = unit['Deskripsi'] || `${type} - ${condition}`;
+                    
+                    const rawImageUrls = (unit['URL Foto'] || '').split(',');
+                    const imageUrls = rawImageUrls.map(url => formatDriveImageUrl(url)).filter(url => url !== '');
+                    const coverImage = imageUrls.length > 0 ? imageUrls[0] : 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80';
+                    const photoBadgeText = imageUrls.length > 1 ? `📷 ${imageUrls.length} Foto` : '📷 1 Foto';
+
+                    const formattedPrice = new Intl.NumberFormat('id-ID').format(price);
+
+                    window[`unitImages_${unitIdx}`] = imageUrls;
+
+                    const cardHTML = `
+                        <div class="unit-card ${cardOpacityClass} rounded-xl border border-grove-border overflow-hidden shadow-sm flex flex-col transition hover:shadow-md" 
+                             data-type="${type}" data-condition="${condition}" data-price="${price}">
+                            <div class="relative bg-gray-900 h-48 cursor-pointer group" onclick='openModalByIdx(${unitIdx}, "${encodeURIComponent(name)}")'>
+                                <img src="${coverImage}" alt="${name}" class="w-full h-full object-cover ${imageEffectClass} group-hover:scale-105 transition duration-300" onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80'">
+                                <div class="absolute inset-0 ${isRented ? 'bg-black/40' : ''} pointer-events-none"></div>
+                                <span class="absolute top-2 left-2 ${statusBadgeClass} text-white text-xs px-2.5 py-1 rounded font-bold shadow">${statusText}</span>
+                                <span class="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded backdrop-blur-xs font-semibold">${photoBadgeText}</span>
+                            </div>
+                            <div class="p-4 flex-grow flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h4 class="font-bold text-grove-text">${name}</h4>
+                                        <span class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">${type}</span>
+                                    </div>
+                                    <div class="text-xs text-grove-muted mb-4 whitespace-pre-line bg-gray-50 p-2.5 rounded-lg border border-gray-100 font-mono leading-relaxed">${fullDesc}</div>
+                                </div>
+                                <div class="border-t border-grove-border pt-3">
+                                    <div class="text-xs text-grove-muted">Harga Sewa:</div>
+                                    <div class="text-lg font-bold text-grove-primary mb-3">Rp ${formattedPrice} <span class="text-xs font-normal text-grove-muted">/ tahun</span></div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <button onclick='openModalByIdx(${unitIdx}, "${encodeURIComponent(name)}")' class="w-full bg-gray-100 hover:bg-gray-200 text-grove-text py-2 rounded-lg text-xs font-semibold transition">Lihat Foto</button>
+                                        <a href="https://wa.me/6281285057447?text=Halo%20ALProperty,%20saya%20tertarik%20dengan%20unit%20${encodeURIComponent(name)}" 
+                                           target="_blank" 
+                                           class="block w-full text-center bg-grove-primary hover:bg-grove-primaryHover text-white py-2 rounded-lg text-xs font-semibold transition">
+                                            Tanya WA
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    grid.insertAdjacentHTML('beforeend', cardHTML);
+                });
+
+                document.getElementById('unitCount').textContent = `Menampilkan ${count} unit`;
+
+            } catch (err) {
+                console.error(err);
+                grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-8">Gagal memuat data Google Sheets. Pastikan spreadsheet sudah diset 'Publish to Web (CSV)'.</p>`;
+            }
+        }
+
+        function openModalByIdx(idx, title) {
+            const images = window[`unitImages_${idx}`];
+            currentModalImages = images && images.length > 0 ? images : ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80'];
+            currentModalIndex = 0;
+            document.getElementById('modalTitle').textContent = decodeURIComponent(title);
+            updateModalView();
+            document.getElementById('imageModal').classList.remove('hidden');
+            document.getElementById('imageModal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+            document.getElementById('imageModal').classList.remove('flex');
+        }
+
+        function updateModalView() {
+            const imgElement = document.getElementById('modalMainImage');
+            imgElement.src = currentModalImages[currentModalIndex];
+            
+            document.getElementById('modalCounter').textContent = `${currentModalIndex + 1} / ${currentModalImages.length}`;
+
+            const thumbsContainer = document.getElementById('modalThumbnails');
+            thumbsContainer.innerHTML = '';
+            currentModalImages.forEach((img, idx) => {
+                const border = idx === currentModalIndex ? 'border-2 border-grove-primary' : 'opacity-60';
+                thumbsContainer.innerHTML += `<img src="${img}" class="w-14 h-14 object-cover rounded cursor-pointer ${border}" onclick="setModalIndex(${idx})">`;
+            });
+        }
+
+        function setModalIndex(idx) {
+            currentModalIndex = idx;
+            updateModalView();
+        }
+
+        function prevImage() {
+            currentModalIndex = (currentModalIndex - 1 + currentModalImages.length) % currentModalImages.length;
+            updateModalView();
+        }
+
+        function nextImage() {
+            currentModalIndex = (currentModalIndex + 1) % currentModalImages.length;
+            updateModalView();
+        }
+
+        function filterUnits() {
+            const type = document.getElementById('filterType').value;
+            const condition = document.getElementById('filterCondition').value;
+            const price = document.getElementById('filterPrice').value;
+
+            const cards = document.querySelectorAll('.unit-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const cardType = card.getAttribute('data-type');
+                const cardCondition = card.getAttribute('data-condition');
+                const cardPrice = parseInt(card.getAttribute('data-price')) || 0;
+
+                const matchType = type === 'all' || cardType === type;
+                const matchCondition = condition === 'all' || cardCondition === condition;
+                const matchPrice = price === 'all' || cardPrice <= parseInt(price);
+
+                if (matchType && matchCondition && matchPrice) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            document.getElementById('unitCount').textContent = `Menampilkan ${visibleCount} unit`;
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchSheetUnits);
+    </script>
+</body>
+</html>

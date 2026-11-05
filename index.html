@@ -3,7 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALProperty - Sewa Apartemen Murah & Terjangkau</title>
+    <title>Sewa Apartemen PIK: Tokyo Riverside & Osaka Riverview | ALProperty</title>
+    <meta name="description" content="Sewa apartemen Tokyo Riverside, Osaka Riverview & Gold Coast di PIK. Unit Studio, 1BR, 2BR furnished atau kosongan, harga per tahun. Chat langsung via WhatsApp.">
+    <link rel="canonical" href="https://alproperty.vercel.app/">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="theme-color" content="#0B1A52">
+    
+    <!-- Preview saat link dibagikan di WhatsApp / Facebook / Instagram -->
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:site_name" content="ALProperty">
+    <meta property="og:title" content="Sewa Apartemen PIK: Tokyo Riverside & Osaka Riverview | ALProperty">
+    <meta property="og:description" content="Unit Studio, 1BR, 2BR di Tokyo Riverside, Osaka Riverview & Gold Coast PIK. Harga per tahun, chat langsung via WhatsApp.">
+    <meta property="og:url" content="https://alproperty.vercel.app/">
+    <meta property="og:image" content="https://alproperty.vercel.app/1721233003777.jpeg">
+    <meta name="twitter:card" content="summary">
+    
+    <!-- Data terstruktur untuk Google (JSON valid, tanpa komentar di dalamnya) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "RealEstateAgent",
+      "name": "ALProperty",
+      "description": "Agen sewa apartemen dan layanan titip sewa unit di Pantai Indah Kapuk (PIK): Tokyo Riverside, Osaka Riverview, dan Gold Coast.",
+      "url": "https://alproperty.vercel.app/",
+      "image": "https://alproperty.vercel.app/1721233003777.jpeg",
+      "telephone": "+6281285057447",
+      "address": { "@type": "PostalAddress", "addressCountry": "ID" },
+      "areaServed": [
+        { "@type": "Place", "name": "Tokyo Riverside, PIK 2" },
+        { "@type": "Place", "name": "Osaka Riverview, PIK 2" },
+        { "@type": "Place", "name": "Gold Coast, PIK" }
+      ]
+    }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -11,14 +44,17 @@
                 extend: {
                     colors: {
                         grove: {
-                            bg: '#F9F8F6',
+                            bg: '#EEF3FB',
                             card: '#FFFFFF',
-                            primary: '#5B8266',
-                            primaryHover: '#4A6E54',
-                            accent: '#E2C044',
-                            text: '#2B2D42',
-                            muted: '#6C757D',
-                            border: '#E5E7EB'
+                            navy: '#0B1A52',
+                            primary: '#1D3A8F',
+                            primaryHover: '#152C6E',
+                            accent: '#F2A71B',
+                            gold: '#FDF0D2',
+                            goldText: '#7A4F00',
+                            text: '#0F1D45',
+                            muted: '#5A6A8C',
+                            border: '#D6DFF0'
                         }
                     }
                 }
@@ -29,11 +65,11 @@
 <body class="bg-grove-bg text-grove-text font-sans antialiased min-h-screen flex flex-col">
 
     <!-- Header / Navbar Minimalis -->
-    <header class="bg-white border-b border-grove-border sticky top-0 z-50">
+    <header class="bg-white border-b-2 border-grove-accent sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center space-x-2">
                 <span class="text-xl font-bold text-grove-primary tracking-tight">ALProperty</span>
-                <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-medium">Sewa Apartemen</span>
+                <span class="text-xs bg-grove-gold text-grove-goldText px-2 py-0.5 rounded font-medium">Sewa Apartemen</span>
             </div>
             <a href="https://wa.me/6281285057447?text=Halo%20ALProperty,%20saya%20mau%20tanya%20sewa%20apartemen" 
                target="_blank" 
@@ -44,16 +80,16 @@
     </header>
 
     <!-- Banner Profil Singkat -->
-    <section class="bg-white border-b border-grove-border py-6">
+    <section class="bg-grove-navy py-6">
         <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-4">
-                <img src="1721233003777.jpeg" alt="Agen ALProperty" class="w-16 h-16 rounded-full object-cover border-2 border-grove-primary shadow-sm" onerror="this.src='https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80'">
+                <img src="1721233003777.jpeg" alt="Alwi Koswara, agen sewa apartemen PIK ALProperty" class="w-16 h-16 rounded-full object-cover border-2 border-grove-accent shadow-sm" onerror="this.src='https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80'">
                 <div>
-                    <h1 class="text-lg font-bold text-grove-text">Alwi Koswara - LOT Property Agent</h1>
-                    <p class="text-sm text-grove-muted">Sewa & Beli Apartemen</p>
+                    <h1 class="text-lg font-bold text-white">Sewa Apartemen PIK - Alwi Koswara, LOT Property Agent</h1>
+                    <p class="text-sm text-blue-200">Cari & Titip Sewa Apartemen PIK</p>
                 </div>
             </div>
-            <div class="text-sm text-grove-muted bg-grove-bg p-3 rounded-lg border border-grove-border">
+            <div class="text-sm text-blue-100 bg-white/10 p-3 rounded-lg border border-white/20">
                 📍 Pantai Indah Kapuk (PIK) : Tokyo Riverside, Osaka Riverview, Gold Coast
             </div>
         </div>
@@ -63,15 +99,15 @@
     <main class="max-w-6xl mx-auto px-4 py-8 flex-grow">
 
         <!-- Banner Info Terakhir Listing Diupdate -->
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-900 px-4 py-2.5 rounded-xl mb-6 flex items-center justify-between text-xs sm:text-sm">
+        <div class="bg-blue-50 border border-blue-200 text-blue-900 px-4 py-2.5 rounded-xl mb-6 flex items-center justify-between text-xs sm:text-sm">
             <div class="flex items-center space-x-2">
                 <span class="relative flex h-2.5 w-2.5">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-600"></span>
                 </span>
                 <span class="font-medium">Terakhir Listing Diupdate: <strong id="lastUpdatedText" class="font-bold">Memuat...</strong></span>
             </div>
-            <span class="hidden sm:inline-block text-xs bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded font-semibold">Unit Ready</span>
+            <span class="hidden sm:inline-block text-xs bg-grove-accent text-grove-navy px-2 py-0.5 rounded font-semibold">Unit Ready</span>
         </div>
 
         <div class="bg-white p-4 rounded-xl border border-grove-border shadow-sm mb-8">
@@ -111,7 +147,7 @@
 
         <!-- Daftar Katalog Unit -->
         <div class="mb-4 flex justify-between items-center">
-            <h3 class="text-lg font-bold text-grove-text">Daftar Unit Tersedia</h3>
+            <h2 class="text-lg font-bold text-grove-text">Daftar Unit Sewa Apartemen PIK Tersedia</h2>
             <span id="unitCount" class="text-xs text-grove-muted">Memuat data Google Sheets...</span>
         </div>
 
@@ -122,6 +158,34 @@
                 <p class="text-sm">Menghubungkan ke Google Sheets...</p>
             </div>
         </div>
+    <section class="mt-12 bg-white p-6 rounded-xl border border-grove-border" aria-label="Tentang ALProperty">
+        <h2 class="text-lg font-bold text-grove-text mb-2">Sewa Apartemen di PIK: Tokyo Riverside, Osaka Riverview & Gold Coast</h2>
+        <p class="text-sm text-grove-muted mb-4">
+            ALProperty membantu Anda mencari unit sewa atau menitipkan unit untuk disewakan di kawasan Pantai Indah Kapuk (PIK),
+            termasuk Tokyo Riverside, Osaka Riverview, dan Gold Coast. Tersedia unit Studio, 1 Bedroom (1BR),
+            dan 2 Bedroom (2BR) dengan kondisi kosongan, semi furnished, atau full furnished.
+            Harga sewa ditampilkan per tahun pada setiap unit, dan daftar unit diperbarui secara berkala.
+        </p>
+        <h3 class="text-sm font-semibold text-grove-text mb-2">Pertanyaan yang sering diajukan</h3>
+        <div class="space-y-2 text-sm text-grove-muted">
+            <details class="border border-grove-border rounded-lg p-3">
+                <summary class="font-medium text-grove-text cursor-pointer">Apakah hanya unit yang tertera yang bisa disewa?</summary>
+                <p class="mt-2">Tidak. Jika Anda punya kebutuhan tertentu, hubungi kami lewat WhatsApp dan kami akan carikan unit sesuai spesifikasi yang Anda butuhkan.</p>
+            </details>
+            <details class="border border-grove-border rounded-lg p-3">
+                <summary class="font-medium text-grove-text cursor-pointer">Apakah saya bisa menitipkan unit untuk disewakan?</summary>
+                <p class="mt-2">Bisa. Hubungi kami lewat WhatsApp untuk menawarkan unit Anda.</p>
+            </details>
+            <details class="border border-grove-border rounded-lg p-3">
+                <summary class="font-medium text-grove-text cursor-pointer">Bagaimana cara menanyakan atau survei unit?</summary>
+                <p class="mt-2">Klik tombol "Tanya WA" pada unit yang Anda minati, atau hubungi ALProperty lewat WhatsApp untuk membuat janji survei.</p>
+            </details>
+            <details class="border border-grove-border rounded-lg p-3">
+                <summary class="font-medium text-grove-text cursor-pointer">Apakah harga sewa per bulan atau per tahun?</summary>
+                <p class="mt-2">Sebagian besar unit hanya tersedia untuk sewa tahunan. Untuk sewa bulanan, silakan konfirmasi dulu lewat WhatsApp.</p>
+            </details>
+        </div>
+    </section>
     </main>
 
     <!-- Modal Overlay Galeri Foto Melayang -->
@@ -142,9 +206,9 @@
     </div>
 
     <!-- Footer Simple -->
-    <footer class="bg-white border-t border-grove-border py-6 mt-12">
-        <div class="max-w-6xl mx-auto px-4 text-center text-xs text-grove-muted">
-            <p class="font-semibold text-grove-text mb-1">ALProperty © 2026</p>
+    <footer class="bg-grove-navy border-t-2 border-grove-accent py-6 mt-12">
+        <div class="max-w-6xl mx-auto px-4 text-center text-xs text-blue-200">
+            <p class="font-semibold text-white mb-1">ALProperty © 2026</p>
             <p>Jasa Titip Sewa & Agen Properti Apartemen. Layanan Responsif & Transparan.</p>
         </div>
     </footer>
@@ -262,7 +326,7 @@
                         <div class="unit-card ${cardOpacityClass} rounded-xl border border-grove-border overflow-hidden shadow-sm flex flex-col transition hover:shadow-md" 
                              data-type="${type}" data-condition="${condition}" data-price="${price}">
                             <div class="relative bg-gray-900 h-48 cursor-pointer group" onclick='openModalByIdx(${unitIdx}, "${encodeURIComponent(name)}")'>
-                                <img src="${coverImage}" alt="${name}" class="w-full h-full object-cover ${imageEffectClass} group-hover:scale-105 transition duration-300" onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80'">
+                                <img src="${coverImage}" alt="Apartemen ${type} ${name} PIK" class="w-full h-full object-cover ${imageEffectClass} group-hover:scale-105 transition duration-300" onerror="this.src='https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=80'">
                                 <div class="absolute inset-0 ${isRented ? 'bg-black/40' : ''} pointer-events-none"></div>
                                 <span class="absolute top-2 left-2 ${statusBadgeClass} text-white text-xs px-2.5 py-1 rounded font-bold shadow">${statusText}</span>
                                 <span class="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded backdrop-blur-xs font-semibold">${photoBadgeText}</span>
@@ -271,15 +335,15 @@
                                 <div>
                                     <div class="flex justify-between items-start mb-2">
                                         <h4 class="font-bold text-grove-text">${name}</h4>
-                                        <span class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">${type}</span>
+                                        <span class="text-xs bg-blue-50 text-blue-900 px-2 py-0.5 rounded">${type}</span>
                                     </div>
-                                    <div class="text-xs text-grove-muted mb-4 whitespace-pre-line bg-gray-50 p-2.5 rounded-lg border border-gray-100 font-mono leading-relaxed">${fullDesc}</div>
+                                    <div class="text-xs text-grove-muted mb-4 whitespace-pre-line bg-blue-50/60 p-2.5 rounded-lg border border-blue-100 font-mono leading-relaxed">${fullDesc}</div>
                                 </div>
                                 <div class="border-t border-grove-border pt-3">
                                     <div class="text-xs text-grove-muted">Harga Sewa:</div>
                                     <div class="text-lg font-bold text-grove-primary mb-3">Rp ${formattedPrice} <span class="text-xs font-normal text-grove-muted">/ tahun</span></div>
                                     <div class="grid grid-cols-2 gap-2">
-                                        <button onclick='openModalByIdx(${unitIdx}, "${encodeURIComponent(name)}")' class="w-full bg-gray-100 hover:bg-gray-200 text-grove-text py-2 rounded-lg text-xs font-semibold transition">Lihat Foto</button>
+                                        <button onclick='openModalByIdx(${unitIdx}, "${encodeURIComponent(name)}")' class="w-full bg-blue-50 hover:bg-blue-100 text-grove-text py-2 rounded-lg text-xs font-semibold transition">Lihat Foto</button>
                                         <a href="https://wa.me/6281285057447?text=Halo%20ALProperty,%20saya%20tertarik%20dengan%20unit%20${encodeURIComponent(name)}" 
                                            target="_blank" 
                                            class="block w-full text-center bg-grove-primary hover:bg-grove-primaryHover text-white py-2 rounded-lg text-xs font-semibold transition">
